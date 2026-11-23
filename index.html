@@ -319,7 +319,8 @@
       margin-top: 20px;
     }
 
-    .action-button {
+    .action-button,
+    #resetBtn {
       min-height: 48px;
       padding: 12px 16px;
       border: 1px solid transparent;
@@ -339,13 +340,15 @@
       background: #35C681;
     }
 
-    .reset-button {
+    .reset-button,
+    #resetBtn {
       border-color: #AEB6C5;
       background: var(--white);
       color: var(--navy);
     }
 
-    .reset-button:hover {
+    .reset-button:hover,
+    #resetBtn:hover {
       background: #F7F8FA;
     }
 
@@ -355,6 +358,7 @@
     }
 
     .action-button:focus-visible,
+    #resetBtn:focus-visible,
     .header-link:focus-visible {
       outline: 3px solid var(--orange);
       outline-offset: 3px;
@@ -485,7 +489,7 @@
         </section>
 
         <div class="actions">
-          <button class="action-button reset-button" id="reset" type="button">Reset</button>
+          <button type="button" id="resetBtn">Reset</button>
           <button class="action-button copy-button" id="copy" type="button" disabled>Copy result</button>
         </div>
         <p class="privacy-note">Your bill stays on this device. No sign-up, no fuss.</p>
@@ -506,7 +510,7 @@
     const taxOutput = document.querySelector("#tax-result");
     const totalOutput = document.querySelector("#total-result");
     const message = document.querySelector("#message");
-    const resetButton = document.querySelector("#reset");
+    const results = document.querySelector(".results");
     const copyButton = document.querySelector("#copy");
     let resultSummary = "";
     let copyTimeout;
@@ -531,6 +535,9 @@
 
     function calculate() {
       window.clearTimeout(copyTimeout);
+      results.hidden = false;
+      results.style.display = "";
+      message.style.display = "";
       const bill = billInput.valueAsNumber;
       const people = peopleInput.valueAsNumber;
       const tipPercentage = Number(tipInput.value);
@@ -578,19 +585,19 @@
       calculate();
     });
 
-    resetButton.addEventListener("click", () => {
-      form.reset();
-      billInput.value = "";
-      peopleInput.value = "";
-      tipInput.value = "";
-      taxInput.value = "";
-      shareOutput.textContent = "—";
-      tipOutput.textContent = "—";
-      taxOutput.textContent = "—";
-      totalOutput.textContent = "—";
+    document.getElementById("resetBtn").addEventListener("click", function () {
+      document.querySelectorAll("input").forEach(function (el) { el.value = ""; });
+      document.querySelectorAll("select").forEach(function (el) { el.selectedIndex = 0; });
+      var tax = document.querySelector('input[name="tax"], #tax');
+      if (tax) { tax.value = "16"; }
+      tipInput.value = "0";
+      document.querySelectorAll(".results, #message").forEach(function (el) {
+        el.style.display = "none";
+      });
+      results.hidden = false;
       resultSummary = "";
       copyButton.disabled = true;
-      message.textContent = "Add a bill to see your split.";
+      message.textContent = "";
       message.classList.remove("error");
       window.clearTimeout(copyTimeout);
     });
