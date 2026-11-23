@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#FFF9F0">
+  <title>Split It — Eat together. Pay fairly.</title>
+  <meta name="description" content="Split a meal bill fairly with your friends.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --mint: #2BB673;
+      --orange: #F59E0B;
+      --navy: #1F2A44;
+      --cream: #FFF9F0;
+      --error: #E5484D;
+      --white: #FFFFFF;
+      font-family: "Inter", system-ui, sans-serif;
+      color: var(--navy);
+      background: var(--cream);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 92% 3%, rgb(245 158 11 / 10%), transparent 28rem),
+        var(--cream);
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .page {
+      display: flex;
+      min-height: 100vh;
+      flex-direction: column;
+      padding: 0 20px;
+    }
+
+    .site-header,
+    main,
+    footer {
+      width: 100%;
+      max-width: 520px;
+      margin-inline: auto;
+    }
+
+    .site-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 24px 0;
+    }
+
+    .brand {
+      display: flex;
+      min-width: 0;
+      align-items: center;
+      gap: 11px;
+      text-decoration: none;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      flex: 0 0 auto;
+      place-items: center;
+      border-radius: 14px;
+      background: var(--mint);
+      color: var(--navy);
+      font-family: "Poppins", system-ui, sans-serif;
+      font-size: 19px;
+      font-weight: 700;
+      transform: rotate(-4deg);
+    }
+
+    .brand-copy {
+      display: grid;
+      gap: 2px;
+    }
+
+    .brand-name {
+      font-family: "Poppins", system-ui, sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .tagline {
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .header-link {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      padding: 0 12px;
+      border: 1px solid rgb(31 42 68 / 18%);
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .header-link:hover,
+    .header-link:focus-visible {
+      border-color: var(--navy);
+      outline: none;
+    }
+
+    main {
+      flex: 1;
+      padding: 30px 0 48px;
+    }
+
+    .intro {
+      margin-bottom: 24px;
+    }
+
+    h1,
+    h2,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 8px;
+      font-family: "Poppins", system-ui, sans-serif;
+      font-size: clamp(29px, 8vw, 38px);
+      font-weight: 700;
+      letter-spacing: -1.2px;
+      line-height: 1.15;
+    }
+
+    .intro p {
+      max-width: 36ch;
+      margin-bottom: 0;
+      color: #46516A;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .calculator {
+      padding: 22px;
+      border: 1px solid rgb(31 42 68 / 10%);
+      border-radius: 24px;
+      background: var(--white);
+      box-shadow: 0 18px 48px rgb(31 42 68 / 8%);
+    }
+
+    .fields {
+      display: grid;
+      gap: 18px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field label {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-wrap input {
+      width: 100%;
+      height: 52px;
+      padding: 0 14px;
+      border: 1px solid #AEB6C5;
+      border-radius: 12px;
+      background: var(--white);
+      color: var(--navy);
+      font: inherit;
+      font-size: 16px;
+    }
+
+    .input-wrap.has-prefix input {
+      padding-left: 48px;
+    }
+
+    .prefix {
+      position: absolute;
+      top: 50%;
+      left: 14px;
+      color: #46516A;
+      font-size: 14px;
+      font-weight: 600;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    select {
+      width: 100%;
+      height: 52px;
+      padding: 0 42px 0 14px;
+      border: 1px solid #AEB6C5;
+      border-radius: 12px;
+      background: var(--white);
+      color: var(--navy);
+      font: inherit;
+      font-size: 16px;
+    }
+
+    .input-wrap input:focus-visible,
+    select:focus-visible {
+      border-color: var(--mint);
+      outline: 3px solid rgb(43 182 115 / 25%);
+      outline-offset: 1px;
+    }
+
+    .results {
+      margin-top: 23px;
+      padding: 24px;
+      border: 2px solid var(--mint);
+      border-radius: 22px;
+      background: linear-gradient(145deg, #E9F8EF, #F7FCF8 75%);
+      box-shadow: 0 12px 28px rgb(43 182 115 / 12%);
+    }
+
+    .share-label {
+      margin-bottom: 6px;
+      color: #46516A;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .share-amount {
+      margin-bottom: 20px;
+      font-family: "Poppins", system-ui, sans-serif;
+      font-size: clamp(44px, 15vw, 60px);
+      font-weight: 700;
+      letter-spacing: -2px;
+      line-height: 1.1;
+      overflow-wrap: anywhere;
+    }
+
+    .breakdown {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+    }
+
+    .breakdown-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .breakdown-row dt {
+      color: #46516A;
+    }
+
+    .breakdown-row dd {
+      margin: 0;
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .breakdown-row.total {
+      margin-top: 2px;
+      padding-top: 12px;
+      border-top: 1px solid rgb(31 42 68 / 15%);
+      font-weight: 700;
+    }
+
+    .breakdown-row.total dt {
+      color: var(--navy);
+      font-weight: 700;
+    }
+
+    .message {
+      min-height: 21px;
+      margin: 12px 0 0;
+      color: #46516A;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .message.error {
+      color: var(--navy);
+    }
+
+    .message.error::before {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      margin-right: 7px;
+      border-radius: 50%;
+      background: var(--error);
+      content: "";
+      vertical-align: 1px;
+    }
+
+    .split-button {
+      width: 100%;
+      min-height: 60px;
+      margin-top: 20px;
+      padding: 16px 20px;
+      border: 0;
+      border-radius: 14px;
+      background: var(--mint);
+      color: var(--navy);
+      cursor: pointer;
+      font: inherit;
+      font-size: 17px;
+      font-weight: 700;
+      box-shadow: 0 5px 0 #208A56;
+      transition: background-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+    }
+
+    .split-button:hover {
+      background: #35C681;
+      box-shadow: 0 8px 16px rgb(31 42 68 / 18%);
+      transform: translateY(-2px);
+    }
+
+    .split-button:active {
+      box-shadow: 0 2px 0 #208A56;
+      transform: translateY(2px);
+    }
+
+    .split-button:focus-visible,
+    .header-link:focus-visible {
+      outline: 3px solid var(--orange);
+      outline-offset: 3px;
+    }
+
+    .privacy-note {
+      margin: 15px 0 0;
+      color: #46516A;
+      font-size: 12px;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    footer {
+      padding: 18px 0 25px;
+      border-top: 1px solid rgb(31 42 68 / 12%);
+      color: #46516A;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    @media (max-width: 380px) {
+      .page {
+        padding-inline: 16px;
+      }
+
+      .site-header {
+        gap: 8px;
+      }
+
+      .brand {
+        gap: 8px;
+      }
+
+      .header-link {
+        padding-inline: 10px;
+        font-size: 12px;
+      }
+
+      .calculator {
+        padding: 18px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="site-header">
+      <a class="brand" href="#calculator" aria-label="Split It home">
+        <span class="brand-mark" aria-hidden="true">S</span>
+        <span class="brand-copy">
+          <span class="brand-name">Split It</span>
+          <span class="tagline">Eat together. Pay fairly.</span>
+        </span>
+      </a>
+      <a class="header-link" href="#calculator">Go to calculator</a>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <h1 id="page-title">Good food. Fair split.</h1>
+        <p>Pop in the bill and we’ll do the maths. Everyone pays their share, no awkward calculator huddles.</p>
+      </section>
+
+      <form class="calculator" id="calculator" novalidate>
+        <div class="fields">
+          <div class="field">
+            <label for="bill">Total bill in rupees</label>
+            <div class="input-wrap has-prefix">
+              <span class="prefix" aria-hidden="true">Rs</span>
+              <input id="bill" name="bill" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0" aria-describedby="message">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="people">Number of people</label>
+            <div class="input-wrap">
+              <input id="people" name="people" type="number" min="1" max="20" step="1" value="2" inputmode="numeric" aria-describedby="message">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="tip">Tip percentage</label>
+            <select id="tip" name="tip">
+              <option value="0">0%</option>
+              <option value="5">5%</option>
+              <option value="10" selected>10%</option>
+              <option value="15">15%</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="tax">Tax percentage</label>
+            <div class="input-wrap">
+              <input id="tax" name="tax" type="number" min="0" step="0.01" value="16" inputmode="decimal" aria-describedby="message">
+            </div>
+          </div>
+        </div>
+
+        <section class="results" aria-labelledby="share-label" aria-live="polite">
+          <p class="share-label" id="share-label">Each person pays</p>
+          <p class="share-amount" id="share">—</p>
+          <dl class="breakdown">
+            <div class="breakdown-row">
+              <dt>Tip</dt>
+              <dd id="tip-result">—</dd>
+            </div>
+            <div class="breakdown-row">
+              <dt>Tax</dt>
+              <dd id="tax-result">—</dd>
+            </div>
+            <div class="breakdown-row total">
+              <dt>Grand total</dt>
+              <dd id="total-result">—</dd>
+            </div>
+          </dl>
+          <p class="message" id="message" role="status">Add a bill to see your split.</p>
+        </section>
+
+        <button class="split-button" type="submit">Split it</button>
+        <p class="privacy-note">Your bill stays on this device. No sign-up, no fuss.</p>
+      </form>
+    </main>
+
+    <footer>Made for hungry students in Lahore.</footer>
+  </div>
+
+  <script>
+    const form = document.querySelector("#calculator");
+    const billInput = document.querySelector("#bill");
+    const peopleInput = document.querySelector("#people");
+    const tipInput = document.querySelector("#tip");
+    const taxInput = document.querySelector("#tax");
+    const shareOutput = document.querySelector("#share");
+    const tipOutput = document.querySelector("#tip-result");
+    const taxOutput = document.querySelector("#tax-result");
+    const totalOutput = document.querySelector("#total-result");
+    const message = document.querySelector("#message");
+    const formatMoney = (amount) => {
+      const rounded = Math.round((amount + Number.EPSILON) * 100) / 100;
+      return `Rs ${new Intl.NumberFormat("en-US", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+      }).format(rounded)}`;
+    };
+
+    function showError(text) {
+      shareOutput.textContent = "—";
+      tipOutput.textContent = "—";
+      taxOutput.textContent = "—";
+      totalOutput.textContent = "—";
+      message.textContent = text;
+      message.classList.add("error");
+    }
+
+    function calculate() {
+      const bill = billInput.valueAsNumber;
+      const people = peopleInput.valueAsNumber;
+      const tipPercentage = Number(tipInput.value);
+      const taxPercentage = taxInput.valueAsNumber;
+
+      if (billInput.value.trim() === "" || !Number.isFinite(bill) || bill <= 0) {
+        showError("Hmm, that bill looks empty. Add an amount!");
+        return false;
+      }
+      if (!Number.isInteger(people) || people < 1 || people > 20) {
+        showError("Choose between 1 and 20 people to split the bill.");
+        return false;
+      }
+      if (!Number.isFinite(taxPercentage) || taxPercentage < 0) {
+        showError("Add a tax percentage of 0 or more.");
+        return false;
+      }
+
+      const tip = bill * tipPercentage / 100;
+      const tax = bill * taxPercentage / 100;
+      const total = Math.round((bill + tip + tax + Number.EPSILON) * 100) / 100;
+      const share = Math.ceil(total / people);
+
+      shareOutput.textContent = formatMoney(share);
+      tipOutput.textContent = formatMoney(tip);
+      taxOutput.textContent = formatMoney(tax);
+      totalOutput.textContent = formatMoney(total);
+      message.textContent = `${people} ${people === 1 ? "person" : "people"} splitting the bill.`;
+      message.classList.remove("error");
+      return true;
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      calculate();
+    });
+
+    form.addEventListener("input", () => {
+      calculate();
+    });
+
+    form.addEventListener("change", () => {
+      calculate();
+    });
+  </script>
+</body>
+</html>
