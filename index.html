@@ -9,6 +9,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@700&display=swap" rel="stylesheet">
+  <script>
+    try {
+      if (localStorage.getItem("split-it-theme") === "dark") {
+        document.documentElement.dataset.theme = "dark";
+      }
+    } catch (error) {
+      console.error("Could not read the saved theme preference.", error);
+    }
+  </script>
   <style>
     :root {
       color-scheme: light;
@@ -20,6 +29,16 @@
       --white: #FFFFFF;
       font-family: "Inter", system-ui, sans-serif;
       color: var(--navy);
+      background: var(--cream);
+    }
+
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --mint: #1D754F;
+      --orange: #F6B94E;
+      --navy: #F1F4F8;
+      --cream: #121A25;
+      --white: #1D2938;
       background: var(--cream);
     }
 
@@ -61,6 +80,12 @@
       justify-content: space-between;
       gap: 16px;
       padding: 24px 0;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .brand {
@@ -120,6 +145,31 @@
     .header-link:focus-visible {
       border-color: var(--navy);
       outline: none;
+    }
+
+    .theme-toggle {
+      display: grid;
+      width: 44px;
+      height: 44px;
+      flex: 0 0 44px;
+      place-items: center;
+      border: 1px solid rgb(31 42 68 / 18%);
+      border-radius: 50%;
+      background: var(--white);
+      color: var(--navy);
+      cursor: pointer;
+      font: inherit;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--navy);
+    }
+
+    .theme-toggle:focus-visible {
+      outline: 3px solid var(--orange);
+      outline-offset: 3px;
     }
 
     main {
@@ -234,6 +284,45 @@
       border-radius: 22px;
       background: linear-gradient(145deg, #E9F8EF, #F7FCF8 75%);
       box-shadow: 0 12px 28px rgb(43 182 115 / 12%);
+    }
+
+    :root[data-theme="dark"] .intro p,
+    :root[data-theme="dark"] .prefix,
+    :root[data-theme="dark"] .share-label,
+    :root[data-theme="dark"] .breakdown-row dt,
+    :root[data-theme="dark"] .message,
+    :root[data-theme="dark"] .privacy-note,
+    :root[data-theme="dark"] footer,
+    :root[data-theme="dark"] .recent-empty {
+      color: #BBC7D6;
+    }
+
+    :root[data-theme="dark"] .calculator,
+    :root[data-theme="dark"] .recent-splits {
+      border-color: rgb(255 255 255 / 14%);
+    }
+
+    :root[data-theme="dark"] .input-wrap input,
+    :root[data-theme="dark"] select,
+    :root[data-theme="dark"] .header-link,
+    :root[data-theme="dark"] .theme-toggle {
+      border-color: #68778C;
+    }
+
+    :root[data-theme="dark"] .results {
+      border-color: #48C78E;
+      background: linear-gradient(145deg, #19352C, #1C2937 75%);
+    }
+
+    :root[data-theme="dark"] .breakdown-row.total,
+    :root[data-theme="dark"] .recent-list li,
+    :root[data-theme="dark"] footer {
+      border-color: rgb(255 255 255 / 18%);
+    }
+
+    :root[data-theme="dark"] .reset-button:hover,
+    :root[data-theme="dark"] #resetBtn:hover {
+      background: #2A3646;
     }
 
     .recent-splits {
@@ -433,7 +522,12 @@
       }
 
       .site-header {
+        flex-wrap: wrap;
         gap: 8px;
+      }
+
+      .header-actions {
+        margin-left: auto;
       }
 
       .brand {
@@ -470,7 +564,10 @@
           <span class="tagline">Eat together. Pay fairly.</span>
         </span>
       </a>
-      <a class="header-link" href="how-it-works.html">How it works</a>
+      <div class="header-actions">
+        <a class="header-link" href="how-it-works.html">How it works</a>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to dark mode">🌙</button>
+      </div>
     </header>
 
     <main>
@@ -753,6 +850,30 @@
       copyTimeout = window.setTimeout(() => {
         message.textContent = `${peopleInput.value} ${peopleInput.value === "1" ? "person" : "people"} splitting the bill.`;
       }, 2000);
+    });
+  </script>
+  <script>
+    const themeToggle = document.querySelector("#theme-toggle");
+    const themeRoot = document.documentElement;
+    const themeMeta = document.querySelector('meta[name="theme-color"]');
+
+    function applyTheme(theme) {
+      const isDark = theme === "dark";
+      themeRoot.dataset.theme = isDark ? "dark" : "light";
+      themeToggle.textContent = isDark ? "☀️" : "🌙";
+      themeToggle.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
+      themeMeta.content = isDark ? "#121A25" : "#FFF9F0";
+    }
+
+    applyTheme(themeRoot.dataset.theme);
+    themeToggle.addEventListener("click", () => {
+      const nextTheme = themeRoot.dataset.theme === "dark" ? "light" : "dark";
+      applyTheme(nextTheme);
+      try {
+        localStorage.setItem("split-it-theme", nextTheme);
+      } catch (error) {
+        console.error("Could not save the theme preference.", error);
+      }
     });
   </script>
 </body>
