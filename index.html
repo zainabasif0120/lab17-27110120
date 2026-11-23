@@ -312,35 +312,49 @@
       vertical-align: 1px;
     }
 
-    .split-button {
-      width: 100%;
-      min-height: 60px;
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
       margin-top: 20px;
-      padding: 16px 20px;
-      border: 0;
+    }
+
+    .action-button {
+      min-height: 48px;
+      padding: 12px 16px;
+      border: 1px solid transparent;
       border-radius: 14px;
-      background: var(--mint);
-      color: var(--navy);
       cursor: pointer;
       font: inherit;
-      font-size: 17px;
+      font-size: 14px;
       font-weight: 700;
-      box-shadow: 0 5px 0 #208A56;
-      transition: background-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
     }
 
-    .split-button:hover {
+    .copy-button {
+      background: var(--mint);
+      color: var(--navy);
+    }
+
+    .copy-button:hover:not(:disabled) {
       background: #35C681;
-      box-shadow: 0 8px 16px rgb(31 42 68 / 18%);
-      transform: translateY(-2px);
     }
 
-    .split-button:active {
-      box-shadow: 0 2px 0 #208A56;
-      transform: translateY(2px);
+    .reset-button {
+      border-color: #AEB6C5;
+      background: var(--white);
+      color: var(--navy);
     }
 
-    .split-button:focus-visible,
+    .reset-button:hover {
+      background: #F7F8FA;
+    }
+
+    .action-button:disabled {
+      cursor: not-allowed;
+      opacity: .6;
+    }
+
+    .action-button:focus-visible,
     .header-link:focus-visible {
       outline: 3px solid var(--orange);
       outline-offset: 3px;
@@ -434,6 +448,7 @@
           <div class="field">
             <label for="tip">Tip percentage</label>
             <select id="tip" name="tip">
+              <option value="">Choose a tip</option>
               <option value="0">0%</option>
               <option value="5">5%</option>
               <option value="10" selected>10%</option>
@@ -469,12 +484,15 @@
           <p class="message" id="message" role="status">Add a bill to see your split.</p>
         </section>
 
-        <button class="split-button" type="submit">Split it</button>
+        <div class="actions">
+          <button class="action-button reset-button" id="reset" type="button">Reset</button>
+          <button class="action-button copy-button" id="copy" type="button" disabled>Copy result</button>
+        </div>
         <p class="privacy-note">Your bill stays on this device. No sign-up, no fuss.</p>
       </form>
     </main>
 
-    <footer>Made for hungry students in Lahore.</footer>
+    <footer>Split It · Lahore · Made for LUMS students.</footer>
   </div>
 
   <script>
@@ -488,6 +506,10 @@
     const taxOutput = document.querySelector("#tax-result");
     const totalOutput = document.querySelector("#total-result");
     const message = document.querySelector("#message");
+    const resetButton = document.querySelector("#reset");
+    const copyButton = document.querySelector("#copy");
+    let resultSummary = "";
+    let copyTimeout;
     const formatMoney = (amount) => {
       const rounded = Math.round((amount + Number.EPSILON) * 100) / 100;
       return `Rs ${new Intl.NumberFormat("en-US", {
@@ -501,11 +523,14 @@
       tipOutput.textContent = "—";
       taxOutput.textContent = "—";
       totalOutput.textContent = "—";
+      resultSummary = "";
+      copyButton.disabled = true;
       message.textContent = text;
       message.classList.add("error");
     }
 
     function calculate() {
+      window.clearTimeout(copyTimeout);
       const bill = billInput.valueAsNumber;
       const people = peopleInput.valueAsNumber;
       const tipPercentage = Number(tipInput.value);
@@ -533,14 +558,16 @@
       tipOutput.textContent = formatMoney(tip);
       taxOutput.textContent = formatMoney(tax);
       totalOutput.textContent = formatMoney(total);
-      message.textContent = `${people} ${people === 1 ? "person" : "people"} splitting the bill.`;
+      const peopleLabel = people === 1 ? "person" : "people";
+      resultSummary = `Total ${formatMoney(total)}, ${formatMoney(share)} each for ${people} ${peopleLabel}`;
+      copyButton.disabled = false;
+      message.textContent = `${people} ${peopleLabel} splitting the bill.`;
       message.classList.remove("error");
       return true;
     }
 
     form.addEventListener("submit", (event) => {
       event.preventDefault();
-      calculate();
     });
 
     form.addEventListener("input", () => {
@@ -549,6 +576,41 @@
 
     form.addEventListener("change", () => {
       calculate();
+    });
+
+    resetButton.addEventListener("click", () => {
+      form.reset();
+      billInput.value = "";
+      peopleInput.value = "";
+      tipInput.value = "";
+      taxInput.value = "";
+      shareOutput.textContent = "—";
+      tipOutput.textContent = "—";
+      taxOutput.textContent = "—";
+      totalOutput.textContent = "—";
+      resultSummary = "";
+      copyButton.disabled = true;
+      message.textContent = "Add a bill to see your split.";
+      message.classList.remove("error");
+      window.clearTimeout(copyTimeout);
+    });
+
+    copyButton.addEventListener("click", async () => {
+      window.clearTimeout(copyTimeout);
+      try {
+        await navigator.clipboard.writeText(resultSummary);
+      } catch {
+        message.textContent = "Couldn't copy. Check your browser's clipboard permission.";
+        message.classList.add("error");
+        return;
+      }
+
+      message.textContent = "Copied!";
+      message.classList.remove("error");
+      window.clearTimeout(copyTimeout);
+      copyTimeout = window.setTimeout(() => {
+        message.textContent = `${peopleInput.value} ${peopleInput.value === "1" ? "person" : "people"} splitting the bill.`;
+      }, 2000);
     });
   </script>
 </body>
