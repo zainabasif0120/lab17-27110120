@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#FFF9F0">
+  <title>How it works — Split It</title>
+  <meta name="description" content="Learn how to split a meal bill with tip and tax using Split It.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --mint: #2BB673;
+      --orange: #F59E0B;
+      --navy: #1F2A44;
+      --cream: #FFF9F0;
+      --white: #FFFFFF;
+      font-family: "Inter", system-ui, sans-serif;
+      color: var(--navy);
+      background: var(--cream);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 92% 3%, rgb(245 158 11 / 10%), transparent 28rem),
+        var(--cream);
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .page {
+      display: flex;
+      min-height: 100vh;
+      flex-direction: column;
+      padding: 0 20px;
+    }
+
+    .site-header,
+    main,
+    footer {
+      width: 100%;
+      max-width: 620px;
+      margin-inline: auto;
+    }
+
+    .site-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 24px 0;
+    }
+
+    .brand {
+      display: flex;
+      min-width: 0;
+      align-items: center;
+      gap: 11px;
+      text-decoration: none;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      flex: 0 0 auto;
+      place-items: center;
+      border-radius: 14px;
+      background: var(--mint);
+      color: var(--navy);
+      font-family: "Poppins", system-ui, sans-serif;
+      font-size: 19px;
+      font-weight: 700;
+      transform: rotate(-4deg);
+    }
+
+    .brand-copy {
+      display: grid;
+      gap: 2px;
+    }
+
+    .brand-name {
+      font-family: "Poppins", system-ui, sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .tagline {
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .header-link {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      padding: 0 12px;
+      border: 1px solid rgb(31 42 68 / 18%);
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .header-link:hover,
+    .header-link:focus-visible {
+      border-color: var(--navy);
+      outline: none;
+    }
+
+    .header-link:focus-visible {
+      outline: 3px solid var(--orange);
+      outline-offset: 3px;
+    }
+
+    main {
+      flex: 1;
+      padding: 30px 0 48px;
+    }
+
+    h1,
+    h2,
+    p {
+      margin-top: 0;
+    }
+
+    h1,
+    h2 {
+      font-family: "Poppins", system-ui, sans-serif;
+      font-weight: 700;
+    }
+
+    h1 {
+      margin-bottom: 8px;
+      font-size: clamp(29px, 8vw, 38px);
+      letter-spacing: -1.2px;
+      line-height: 1.15;
+    }
+
+    .intro {
+      margin-bottom: 24px;
+    }
+
+    .intro p,
+    .step p,
+    .example-intro {
+      color: #46516A;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .intro p {
+      max-width: 36ch;
+      margin-bottom: 0;
+    }
+
+    .steps {
+      display: grid;
+      gap: 12px;
+      margin: 0 0 24px;
+      padding: 0;
+      list-style: none;
+      counter-reset: steps;
+    }
+
+    .step,
+    .example {
+      border: 1px solid rgb(31 42 68 / 10%);
+      border-radius: 20px;
+      background: var(--white);
+      box-shadow: 0 12px 32px rgb(31 42 68 / 6%);
+    }
+
+    .step {
+      position: relative;
+      padding: 20px 20px 18px 68px;
+      counter-increment: steps;
+    }
+
+    .step::before {
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      display: grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--mint);
+      content: counter(steps);
+      font-weight: 700;
+    }
+
+    .step h2,
+    .example h2 {
+      margin-bottom: 5px;
+      font-size: 17px;
+      line-height: 1.4;
+    }
+
+    .step p {
+      margin-bottom: 0;
+      font-size: 14px;
+    }
+
+    .example {
+      padding: 22px;
+      border: 2px solid var(--mint);
+      background: linear-gradient(145deg, #E9F8EF, #F7FCF8 75%);
+    }
+
+    .example-intro {
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .breakdown {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+    }
+
+    .breakdown-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .breakdown-row dt {
+      color: #46516A;
+    }
+
+    .breakdown-row dd {
+      margin: 0;
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .breakdown-row.total {
+      margin-top: 2px;
+      padding-top: 12px;
+      border-top: 1px solid rgb(31 42 68 / 15%);
+      font-weight: 700;
+    }
+
+    .breakdown-row.total dt {
+      color: var(--navy);
+      font-weight: 700;
+    }
+
+    .per-person {
+      margin: 18px 0 0;
+      padding-top: 16px;
+      border-top: 1px solid rgb(31 42 68 / 15%);
+      font-family: "Poppins", system-ui, sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .per-person span {
+      display: block;
+      color: #46516A;
+      font-family: "Inter", system-ui, sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    footer {
+      padding: 18px 0 25px;
+      border-top: 1px solid rgb(31 42 68 / 12%);
+      color: #46516A;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    @media (max-width: 380px) {
+      .page {
+        padding-inline: 16px;
+      }
+
+      .site-header {
+        gap: 8px;
+      }
+
+      .brand {
+        gap: 8px;
+      }
+
+      .header-link {
+        padding-inline: 10px;
+        font-size: 12px;
+      }
+
+      .step {
+        padding-right: 16px;
+      }
+
+      .example {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="site-header">
+      <a class="brand" href="index.html#calculator" aria-label="Split It home">
+        <span class="brand-mark" aria-hidden="true">S</span>
+        <span class="brand-copy">
+          <span class="brand-name">Split It</span>
+          <span class="tagline">Eat together. Pay fairly.</span>
+        </span>
+      </a>
+      <a class="header-link" href="index.html#calculator">Go to calculator</a>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <h1 id="page-title">How it works</h1>
+        <p>Three quick steps, then everyone knows their share. The maths is less awkward than deciding who got the last naan.</p>
+      </section>
+
+      <ol class="steps">
+        <li class="step">
+          <h2>Enter the bill</h2>
+          <p>Type in the bill amount in rupees.</p>
+        </li>
+        <li class="step">
+          <h2>Choose your group</h2>
+          <p>Set how many people are sharing the meal.</p>
+        </li>
+        <li class="step">
+          <h2>Add tip and tax</h2>
+          <p>Pick a tip and enter the tax percentage. Your per-person amount updates as you type.</p>
+        </li>
+      </ol>
+
+      <section class="example" aria-labelledby="example-title">
+        <h2 id="example-title">One worked example</h2>
+        <p class="example-intro">A Rs 4,000 bill split between 4 people, with a 10% tip and 16% tax:</p>
+        <dl class="breakdown">
+          <div class="breakdown-row">
+            <dt>Bill</dt>
+            <dd>Rs 4,000</dd>
+          </div>
+          <div class="breakdown-row">
+            <dt>Tip (10%)</dt>
+            <dd>Rs 400</dd>
+          </div>
+          <div class="breakdown-row">
+            <dt>Tax (16%)</dt>
+            <dd>Rs 640</dd>
+          </div>
+          <div class="breakdown-row total">
+            <dt>Grand total</dt>
+            <dd>Rs 5,040</dd>
+          </div>
+        </dl>
+        <p class="per-person"><span>Rs 5,040 ÷ 4 people</span>Rs 1,260 per person</p>
+      </section>
+    </main>
+
+    <footer>Made for hungry students in Lahore.</footer>
+  </div>
+</body>
+</html>
