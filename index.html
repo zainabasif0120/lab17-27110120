@@ -236,6 +236,53 @@
       box-shadow: 0 12px 28px rgb(43 182 115 / 12%);
     }
 
+    .recent-splits {
+      margin-top: 18px;
+      padding: 18px;
+      border: 1px solid rgb(31 42 68 / 10%);
+      border-radius: 20px;
+      background: var(--white);
+      box-shadow: 0 12px 32px rgb(31 42 68 / 6%);
+    }
+
+    .recent-splits h2 {
+      margin-bottom: 0;
+      font-family: "Poppins", system-ui, sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .recent-list {
+      display: grid;
+      margin: 12px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .recent-list li {
+      padding: 12px 0;
+      border-top: 1px solid rgb(31 42 68 / 12%);
+      font-size: 13px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .recent-empty {
+      margin: 12px 0 0;
+      color: #46516A;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .history-clear {
+      width: 100%;
+      margin-top: 14px;
+    }
+
+    .history-status {
+      margin-top: 8px;
+    }
+
     .share-label {
       margin-bottom: 6px;
       color: #46516A;
@@ -488,11 +535,19 @@
           <p class="message" id="message" role="status">Add a bill to see your split.</p>
         </section>
 
+        <section class="recent-splits" aria-labelledby="recent-splits-title">
+          <h2 id="recent-splits-title">Recent splits</h2>
+          <ol class="recent-list" id="recent-list"></ol>
+          <p class="recent-empty" id="recent-empty">Your recent splits will appear here.</p>
+          <button class="action-button reset-button history-clear" id="clear-history" type="button">Clear history</button>
+          <p class="message history-status" id="history-status" role="status" aria-live="polite"></p>
+        </section>
+
         <div class="actions">
           <button type="button" id="resetBtn">Reset</button>
           <button class="action-button copy-button" id="copy" type="button" disabled>Copy result</button>
         </div>
-        <p class="privacy-note">Your bill stays on this device. No sign-up, no fuss.</p>
+        <p class="privacy-note">Recent splits are saved on this device. Clear history whenever you like.</p>
       </form>
     </main>
 
@@ -512,6 +567,13 @@
     const message = document.querySelector("#message");
     const results = document.querySelector(".results");
     const copyButton = document.querySelector("#copy");
+    const recentList = document.querySelector("#recent-list");
+    const recentEmpty = document.querySelector("#recent-empty");
+    const historyStatus = document.querySelector("#history-status");
+    const clearHistoryButton = document.querySelector("#clear-history");
+    const historyStorageKey = "split-it-recent-splits";
+    let recentSplits = [];
+    let currentResult = null;
     let resultSummary = "";
     let copyTimeout;
     const formatMoney = (amount) => {
@@ -522,11 +584,66 @@
       }).format(rounded)}`;
     };
 
+    function isValidRecentSplit(split) {
+      return split !== null &&
+        typeof split === "object" &&
+        Number.isFinite(split.bill) && split.bill > 0 &&
+        Number.isInteger(split.people) && split.people >= 1 && split.people <= 20 &&
+        Number.isInteger(split.share) && split.share >= 0;
+    }
+
+    function renderRecentSplits() {
+      recentList.replaceChildren();
+      recentSplits.forEach((split) => {
+        const item = document.createElement("li");
+        const peopleLabel = split.people === 1 ? "person" : "people";
+        item.textContent = `${formatMoney(split.bill)} bill · ${split.people} ${peopleLabel} · ${formatMoney(split.share)} each`;
+        recentList.append(item);
+      });
+      recentEmpty.hidden = recentSplits.length > 0;
+    }
+
+    function loadRecentSplits() {
+      try {
+        const stored = window.localStorage.getItem(historyStorageKey);
+        if (stored === null) {
+          return [];
+        }
+        const parsed = JSON.parse(stored);
+        if (!Array.isArray(parsed) || parsed.some((split) => !isValidRecentSplit(split))) {
+          throw new Error("Stored history has an invalid format.");
+        }
+        return parsed.slice(0, 5);
+      } catch {
+        historyStatus.textContent = "Couldn't load recent splits from this browser.";
+        historyStatus.classList.add("error");
+        return [];
+      }
+    }
+
+    function saveRecentSplit(split) {
+      recentSplits.unshift(split);
+      recentSplits = recentSplits.slice(0, 5);
+      renderRecentSplits();
+      try {
+        window.localStorage.setItem(historyStorageKey, JSON.stringify(recentSplits));
+        historyStatus.textContent = "";
+        historyStatus.classList.remove("error");
+      } catch {
+        historyStatus.textContent = "Couldn't save this split in your browser.";
+        historyStatus.classList.add("error");
+      }
+    }
+
+    recentSplits = loadRecentSplits();
+    renderRecentSplits();
+
     function showError(text) {
       shareOutput.textContent = "—";
       tipOutput.textContent = "—";
       taxOutput.textContent = "—";
       totalOutput.textContent = "—";
+      currentResult = null;
       resultSummary = "";
       copyButton.disabled = true;
       message.textContent = text;
@@ -561,6 +678,7 @@
       const total = Math.round((bill + tip + tax + Number.EPSILON) * 100) / 100;
       const share = Math.ceil(total / people);
 
+      currentResult = { bill, people, share };
       shareOutput.textContent = formatMoney(share);
       tipOutput.textContent = formatMoney(tip);
       taxOutput.textContent = formatMoney(tax);
@@ -582,7 +700,9 @@
     });
 
     form.addEventListener("change", () => {
-      calculate();
+      if (calculate()) {
+        saveRecentSplit(currentResult);
+      }
     });
 
     document.getElementById("resetBtn").addEventListener("click", function () {
@@ -595,11 +715,26 @@
         el.style.display = "none";
       });
       results.hidden = false;
+      currentResult = null;
       resultSummary = "";
       copyButton.disabled = true;
       message.textContent = "";
       message.classList.remove("error");
       window.clearTimeout(copyTimeout);
+    });
+
+    clearHistoryButton.addEventListener("click", () => {
+      try {
+        window.localStorage.removeItem(historyStorageKey);
+      } catch {
+        historyStatus.textContent = "Couldn't clear recent splits from this browser.";
+        historyStatus.classList.add("error");
+        return;
+      }
+      recentSplits = [];
+      renderRecentSplits();
+      historyStatus.textContent = "Recent splits cleared.";
+      historyStatus.classList.remove("error");
     });
 
     copyButton.addEventListener("click", async () => {
